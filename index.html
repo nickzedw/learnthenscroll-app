@@ -3,10 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>LearnThenScroll</title>
+<title>LearnThenScroll — Learn Something, Then Scroll Guilt-Free</title>
+<meta name="description" content="LearnThenScroll turns doomscrolling into learning: pick a topic, read a 3-minute lesson, pass a quick quiz, then scroll guilt-free.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="LearnThenScroll">
+<meta property="og:title" content="LearnThenScroll — Learn Something, Then Scroll Guilt-Free">
+<meta property="og:description" content="Pick a topic. Read for 3 minutes. Pass a quiz. Then scroll guilt-free.">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:#F5F3F0;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+body{background:#F5F3F0;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
 .phone{max-width:390px;width:100%;background:#FAFAF8;border:0.5px solid #E8E5E0;border-radius:36px;overflow:hidden;min-height:780px;display:flex;flex-direction:column;position:relative;margin:20px auto;}
 .screen{display:none;flex-direction:column;flex:1;overflow:hidden;}
 .screen.active{display:flex;}
@@ -128,6 +133,8 @@ body{background:#F5F3F0;display:flex;align-items:center;justify-content:center;m
 @keyframes spin{to{transform:rotate(360deg);}}
 .load-text{font-size:13px;color:var(--text-sec);line-height:1.6;}
 .load-topic{font-size:15px;font-weight:600;color:var(--text);}
+.site-links{font-size:14px;color:#6B6B6B;margin:0 0 24px;text-align:center;}
+.site-links a{color:#CC3D00;text-decoration:none;font-weight:500;}
 </style>
 </head>
 <body>
@@ -206,6 +213,8 @@ body{background:#F5F3F0;display:flex;align-items:center;justify-content:center;m
     <div class="results-scroll"><div class="results-inner" id="results-inner"></div></div>
   </div>
 </div>
+
+<nav class="site-links"><a href="/blog/">Read the blog</a> — tips on beating doomscrolling and learning in 3 minutes a day</nav>
 
 <script>
 const API="https://api.anthropic.com/v1/messages";

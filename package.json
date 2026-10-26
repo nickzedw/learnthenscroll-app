@@ -1,0 +1,11 @@
+{
+  "name": "learnthenscroll-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-blog.mjs"
+  },
+  "devDependencies": {
+    "marked": "18.1.2"
+  }
+}
