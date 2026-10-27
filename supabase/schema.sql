@@ -170,6 +170,8 @@ revoke execute on function public.click_stats(int) from public, anon;
 grant execute on function public.click_stats(int) to authenticated;
 
 -- ---------- Table grants ----------
+grant usage on schema public to anon, authenticated;
+grant execute on function public.my_role(), public.is_staff(), public.is_admin() to anon, authenticated;
 grant select on public.posts, public.settings to anon, authenticated;
 grant insert on public.store_clicks to anon, authenticated;
 grant select on public.store_clicks to authenticated;
