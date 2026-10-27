@@ -111,6 +111,9 @@ article li{margin-bottom:6px;}
 article blockquote{border-left:4px solid var(--brand);background:var(--brand-light);padding:14px 18px;border-radius:0 10px 10px 0;margin:24px 0;}
 article blockquote p:last-child{margin-bottom:0;}
 article img{max-width:100%;height:auto;border-radius:12px;}
+article table{width:100%;border-collapse:collapse;margin:24px 0;font-size:16px;line-height:1.5;display:block;overflow-x:auto;}
+article th,article td{border-bottom:1px solid var(--border);padding:10px 12px;text-align:left;vertical-align:top;}
+article th{font-weight:600;background:var(--bg-sec);}
 .cta{background:var(--text);color:#fff;border-radius:20px;padding:32px 28px;margin:48px 0 0;text-align:center;}
 .cta h2{color:#fff;font-size:34px;line-height:1.15;margin:0 0 8px;}
 .cta h2 em{color:var(--brand);}
