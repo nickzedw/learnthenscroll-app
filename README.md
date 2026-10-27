@@ -23,6 +23,11 @@ Clicks on the App Store / Google Play buttons anywhere on the site are recorded 
 - **Admin:** everything, including Settings, Team, and deleting posts.
 - **Editor:** for a hired writer. They can write, edit and publish posts, and see the Overview, but can't change settings or the team, or delete posts.
 
+## How it appears on learnthenscroll.com
+The main site is the `learnthenscroll-website` Vercel project (repo `nickzedw/Learnthenscroll`, branch `website`). Its `vercel.json` rewrites `/blog/*`, `/admin/*`, `/api/*`, `/sitemap.xml` and `/robots.txt` to this project's production URL (`https://learnthenscroll-app.vercel.app`). Visitors and Google see everything on learnthenscroll.com, while the blog code stays out of the app repo.
+
+The homepage's App Store buttons post to `/api/click`, so their clicks also show on the admin Overview.
+
 ## One-time setup
 
 ### 1. Supabase (free tier)

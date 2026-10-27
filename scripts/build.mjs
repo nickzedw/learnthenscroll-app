@@ -47,7 +47,8 @@ if (SUPABASE_URL && SUPABASE_ANON_KEY) {
 
 const siteUrl = (settings.site_url || '').replace(/\/+$/, '');
 const abs = (p) => (siteUrl ? siteUrl + p : p);
-const stores = { ios: settings.app_store_url || '', android: settings.play_store_url || '' };
+const DEFAULT_APP_STORE_URL = 'https://apps.apple.com/app/id6801362684';
+const stores = { ios: settings.app_store_url || DEFAULT_APP_STORE_URL, android: settings.play_store_url || '' };
 
 const posts = rows.map((r) => {
   const words = r.body_md.split(/\s+/).filter(Boolean).length;
@@ -63,15 +64,15 @@ const posts = rows.map((r) => {
 
 const fmtDate = (d) => new Date(d + 'T00:00:00Z').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
 
-// Logs App Store / Play button clicks to Supabase (anonymous, insert-only).
-const TRACKING = SUPABASE_URL ? `<script>
+// Logs App Store / Play button clicks via /api/click (anonymous: store + page only).
+const TRACKING = `<script>
 document.addEventListener('click',function(e){var a=e.target.closest('a[data-store]');if(!a)return;
-try{fetch(${JSON.stringify(SUPABASE_URL + '/rest/v1/store_clicks')},{method:'POST',keepalive:true,headers:{'Content-Type':'application/json',apikey:${JSON.stringify(SUPABASE_ANON_KEY)},Authorization:'Bearer '+${JSON.stringify(SUPABASE_ANON_KEY)},Prefer:'return=minimal'},body:JSON.stringify({store:a.dataset.store,page_path:location.pathname.slice(0,300)})});}catch(_){}});
-</script>` : '';
+try{fetch('/api/click',{method:'POST',keepalive:true,headers:{'Content-Type':'application/json'},body:JSON.stringify({store:a.dataset.store,page_path:location.pathname})});}catch(_){}});
+</script>`;
 
 const storeLinks = () => [
-  stores.ios && `<a href="${esc(stores.ios)}" data-store="ios" rel="noopener">Download on the App Store</a>`,
-  stores.android && `<a href="${esc(stores.android)}" data-store="android" rel="noopener">Get it on Google Play</a>`,
+  stores.ios && `<a href="${esc(stores.ios)}" data-store="ios" target="_blank" rel="noopener">Download on the App Store ↗</a>`,
+  stores.android && `<a href="${esc(stores.android)}" data-store="android" target="_blank" rel="noopener">Get it on Google Play ↗</a>`,
 ].filter(Boolean);
 
 const headExtra = (urlPath) => [
@@ -84,20 +85,25 @@ const headExtra = (urlPath) => [
 const CSS = `
 :root{--brand:#FF4D00;--brand-light:#FFF0EB;--brand-dark:#CC3D00;--text:#0E0E0E;--text-sec:#6B6B6B;--border:#E8E5E0;--bg:#FAFAF8;--bg-sec:#F5F3F0;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7;font-size:18px;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7;font-size:18px;}
+.serif,h1,article h2,.cta h2{font-family:'Instrument Serif',Georgia,serif;font-weight:400;}
+h1 em,.serif em{color:var(--brand);}
 a{color:var(--brand-dark);}
 .wrap{max-width:720px;margin:0 auto;padding:0 20px;}
 header.site{border-bottom:1px solid var(--border);background:var(--bg);}
 header.site .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;}
 .wordmark{font-size:20px;font-weight:600;letter-spacing:-0.3px;color:var(--text);text-decoration:none;}
 .wordmark span{color:var(--brand);}
-nav a{color:var(--text-sec);text-decoration:none;font-size:15px;margin-left:20px;}
+nav{display:flex;align-items:center;gap:22px;}
+nav a{color:var(--text-sec);text-decoration:none;font-size:15px;font-weight:500;}
+nav a.get{background:var(--brand);color:#fff;padding:10px 18px;border-radius:999px;font-weight:600;}
+nav a.get:hover{background:var(--brand-dark);color:#fff;}
 nav a:hover{color:var(--text);}
 main{padding:48px 0 64px;}
 .eyebrow{font-size:13px;font-weight:600;color:var(--brand);letter-spacing:0.08em;text-transform:uppercase;}
-h1{font-size:clamp(30px,5vw,42px);line-height:1.15;letter-spacing:-0.5px;margin:10px 0 14px;}
+h1{font-size:clamp(38px,6vw,56px);line-height:1.05;letter-spacing:-0.5px;margin:10px 0 16px;}
 .meta{color:var(--text-sec);font-size:15px;margin-bottom:36px;}
-article h2{font-size:26px;line-height:1.3;margin:40px 0 12px;letter-spacing:-0.3px;}
+article h2{font-size:34px;line-height:1.15;margin:44px 0 12px;}
 article h3{font-size:20px;margin:28px 0 8px;}
 article p,article ul,article ol{margin-bottom:18px;}
 article ul,article ol{padding-left:24px;}
@@ -106,10 +112,11 @@ article blockquote{border-left:4px solid var(--brand);background:var(--brand-lig
 article blockquote p:last-child{margin-bottom:0;}
 article img{max-width:100%;height:auto;border-radius:12px;}
 .cta{background:var(--text);color:#fff;border-radius:20px;padding:32px 28px;margin:48px 0 0;text-align:center;}
-.cta h2{color:#fff;font-size:24px;line-height:1.3;margin:0 0 8px;}
+.cta h2{color:#fff;font-size:34px;line-height:1.15;margin:0 0 8px;}
+.cta h2 em{color:var(--brand);}
 .cta p{color:#CFCFCF;font-size:16px;margin-bottom:20px;}
 .cta .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-.cta a{display:inline-block;background:var(--brand);color:#fff;text-decoration:none;font-weight:600;font-size:15px;padding:13px 22px;border-radius:12px;}
+.cta a{display:inline-block;background:var(--brand);color:#fff;text-decoration:none;font-weight:600;font-size:15px;padding:13px 24px;border-radius:999px;}
 .cta a:hover{background:var(--brand-dark);}
 .related{margin-top:48px;border-top:1px solid var(--border);padding-top:28px;}
 .related h2{font-size:18px;margin-bottom:12px;}
@@ -122,13 +129,15 @@ article img{max-width:100%;height:auto;border-radius:12px;}
 .post-list .meta{margin:6px 0 0;font-size:14px;}
 .empty{color:var(--text-sec);padding:24px 0;}
 footer{border-top:1px solid var(--border);color:var(--text-sec);font-size:14px;padding:28px 0;}
+footer a{color:var(--text-sec);}
+@media (max-width:560px){nav .hide-sm{display:none;}}
 `;
 
 function ctaBlock() {
   const btns = storeLinks();
-  if (!btns.length) btns.push('<a href="/">Try the demo</a>');
+
   return `<aside class="cta">
-  <h2>Learn first. Then scroll guilt-free.</h2>
+  <h2>Learn first. Then scroll <em>guilt-free.</em></h2>
   <p>Pick a topic, read a 3-minute lesson, pass a quick quiz — then your feed unlocks.</p>
   <div class="btns">${btns.join('')}</div>
 </aside>`;
@@ -149,17 +158,19 @@ ${headExtra(urlPath)}
 <meta property="og:description" content="${esc(description)}">
 <meta name="twitter:card" content="summary_large_image">
 ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>` : ''}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>${CSS}</style>
 </head>
 <body>
 <header class="site"><div class="wrap">
   <a class="wordmark" href="/">learn<span>then</span>scroll</a>
-  <nav><a href="/blog/">Blog</a><a href="/">Try the demo</a></nav>
+  <nav><a class="hide-sm" href="/#how">How it works</a><a href="/blog/">Blog</a><a class="get" href="${esc(stores.ios)}" data-store="ios" target="_blank" rel="noopener">Get the app ↗</a></nav>
 </div></header>
 <main><div class="wrap">
 ${body}
 </div></main>
-<footer><div class="wrap">© ${new Date().getFullYear()} ${SITE_NAME} · <a href="/blog/">Blog</a></div></footer>
+<footer><div class="wrap">© ${new Date().getFullYear()} ${SITE_NAME} · <a href="/">Home</a> · <a href="/blog/">Blog</a> · <a href="https://learnthenscroll-legal.vercel.app/privacy" target="_blank" rel="noopener">Privacy Policy</a> · <a href="mailto:support@learnthenscroll.com">Contact</a></div></footer>
 ${TRACKING}
 </body>
 </html>
