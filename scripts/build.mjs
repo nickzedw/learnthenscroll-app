@@ -38,10 +38,11 @@ let rows = [];
 if (SUPABASE_URL && SUPABASE_ANON_KEY) {
   for (const s of await rest('settings?select=key,value')) settings[s.key] = s.value;
   rows = await rest('posts?select=slug,title,description,seo_title,category,body_md,published_at,updated_at&status=eq.published&order=published_at.desc');
-} else if (process.env.VERCEL) {
+} else if (process.env.VERCEL_ENV === 'production') {
+  // Never replace the live site with an empty blog.
   throw new Error('SUPABASE_URL and SUPABASE_ANON_KEY must be set in Vercel → Settings → Environment Variables.');
 } else {
-  console.warn('⚠ SUPABASE_URL / SUPABASE_ANON_KEY not set — building with no posts (local preview only).');
+  console.warn('⚠ SUPABASE_URL / SUPABASE_ANON_KEY not set — building with no posts (preview only).');
 }
 
 const siteUrl = (settings.site_url || '').replace(/\/+$/, '');
