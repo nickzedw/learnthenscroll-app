@@ -1,0 +1,14 @@
+{
+  "name": "learnthenscroll-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  },
+  "devDependencies": {
+    "marked": "18.1.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
